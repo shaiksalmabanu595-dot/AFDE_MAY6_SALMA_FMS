@@ -1,0 +1,5 @@
+# Top-level requirements file — installs the backend dependencies.
+# For the React frontend, see frontend/package.json and run `npm install`
+# inside the frontend/ directory.
+
+-r backend/requirements.txt
