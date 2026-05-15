@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { feedbackService } from '../services/feedbackService.js';
 import FeedbackForm from '../components/FeedbackForm.jsx';
@@ -9,20 +9,28 @@ function EditFeedback() {
   const [initial, setInitial] = useState(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState(null);
+  const redirectTimer = useRef(null);
 
   useEffect(() => {
+    // Clear stale state when the target id changes.
+    setInitial(null);
+    setLoading(true);
+    setMessage(null);
     feedbackService
       .getById(id)
       .then(setInitial)
       .catch(() => setMessage({ type: 'error', text: 'Feedback not found.' }))
       .finally(() => setLoading(false));
+    return () => {
+      if (redirectTimer.current) clearTimeout(redirectTimer.current);
+    };
   }, [id]);
 
   const handleSubmit = async (data) => {
     try {
       await feedbackService.update(id, data);
       setMessage({ type: 'success', text: 'Feedback updated successfully! Redirecting…' });
-      setTimeout(() => navigate(`/feedback/${id}`), 1000);
+      redirectTimer.current = setTimeout(() => navigate(`/feedback/${id}`), 1000);
     } catch (err) {
       const detail = err?.response?.data?.detail;
       setMessage({

@@ -7,17 +7,49 @@
 
 ## Table of Contents
 
-1. [Project Overview](#project-overview)
-2. [Features Implemented](#features-implemented)
-3. [Technology Stack](#technology-stack)
-4. [Project Structure](#project-structure)
-5. [Setup Instructions](#setup-instructions)
-6. [API Documentation](#api-documentation)
-7. [Database Schema](#database-schema)
-8. [Real-Time UI](#real-time-ui)
-9. [Screenshots](#screenshots)
-10. [Testing the API](#testing-the-api)
-11. [Future Enhancements](#future-enhancements)
+1. [Quick Start](#quick-start)
+2. [Project Overview](#project-overview)
+3. [Features Implemented](#features-implemented)
+4. [Technology Stack](#technology-stack)
+5. [Project Structure](#project-structure)
+6. [Setup Instructions](#setup-instructions)
+7. [API Documentation](#api-documentation)
+8. [Database Schema](#database-schema)
+9. [Real-Time UI](#real-time-ui)
+10. [Screenshots](#screenshots)
+11. [Testing the API](#testing-the-api)
+12. [Future Enhancements](#future-enhancements)
+
+---
+
+## Quick Start
+
+> Prerequisites: **Python 3.10+** and **Node.js 18+** must be installed.
+
+Open **two terminals** from the project root and run one command in each:
+
+### Terminal 1 — Backend (FastAPI)
+
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+
+API is now live at: **http://localhost:8000**
+Interactive docs (Swagger UI): **http://localhost:8000/docs**
+
+### Terminal 2 — Frontend (React)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Web app opens automatically at: **http://localhost:3000**
+
+> The SQLite database is created automatically at `database/feedback.db` on first run — no manual setup needed.
 
 ---
 
@@ -79,7 +111,7 @@ The **Feedback Management System** centralizes feedback collection, storage, sea
 ## Project Structure
 
 ```
-AFDE_Salma_FMS/
+AFDE_MAY6_SALMA_FMS/
 │
 ├── backend/                  # FastAPI application
 │   ├── main.py               # App entry point, CORS, router registration
@@ -118,6 +150,7 @@ AFDE_Salma_FMS/
 │           └── feedbackService.js
 │
 ├── database/
+│   ├── feedback.db           # SQLite database (auto-created on first run)
 │   ├── schema.sql            # SQLite + PostgreSQL schema scripts
 │   └── README.md
 │
@@ -141,11 +174,19 @@ AFDE_Salma_FMS/
 - **Node.js 18+** and **npm** — for the React frontend
 - (Optional) **Git** — for version control
 
+Verify your versions:
+
+```bash
+python --version    # should be 3.10 or higher
+node --version      # should be 18 or higher
+npm --version
+```
+
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/<your-username>/AFDE_Salma_FMS.git
-cd AFDE_Salma_FMS
+git clone https://github.com/<your-username>/AFDE_MAY6_SALMA_FMS.git
+cd AFDE_MAY6_SALMA_FMS
 ```
 
 ### 2. Backend Setup (FastAPI)
@@ -153,28 +194,32 @@ cd AFDE_Salma_FMS
 ```bash
 cd backend
 
-# Create and activate a virtual environment (recommended)
+# (Recommended) Create and activate a virtual environment
 python -m venv venv
-# Windows:
+
+# Activate — Windows Command Prompt / PowerShell:
 venv\Scripts\activate
-# macOS / Linux:
-source venv/bin/activate
+
+# Activate — macOS / Linux:
+# source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Run the server
+# Start the development server
 uvicorn main:app --reload
 ```
 
 The API will be available at:
 
-- **API base:** http://localhost:8000
-- **Interactive docs (Swagger UI):** http://localhost:8000/docs
-- **Alternative docs (ReDoc):** http://localhost:8000/redoc
+| URL | Description |
+|-----|-------------|
+| http://localhost:8000 | API base URL |
+| http://localhost:8000/docs | Interactive Swagger UI |
+| http://localhost:8000/redoc | ReDoc documentation |
+| http://localhost:8000/openapi.json | OpenAPI schema (for Postman import) |
 
-The SQLite database file will be created automatically at
-`database/feedback.db` on first run.
+The SQLite database is created automatically at `database/feedback.db` on first run.
 
 ### 3. Frontend Setup (React)
 
@@ -186,17 +231,19 @@ cd frontend
 # Install dependencies
 npm install
 
-# Start the dev server
+# Start the development server
 npm run dev
 ```
 
-The web app will open automatically at **http://localhost:3000**.
+The web app opens automatically at **http://localhost:3000**.
+
+> To build a production bundle instead: `npm run build`
 
 ### 4. Database Setup
 
-No manual setup is required for SQLite — the tables are auto-created.
-For PostgreSQL, see [database/README.md](database/README.md) and the
-PostgreSQL block in [database/schema.sql](database/schema.sql).
+No manual setup is required for SQLite — tables are created automatically when the backend first starts.
+
+For PostgreSQL, see [database/README.md](database/README.md) and the PostgreSQL section in [database/schema.sql](database/schema.sql).
 
 ---
 
@@ -210,31 +257,30 @@ http://localhost:8000
 
 ### Endpoints
 
-| Method | Endpoint            | Description              |
-| ------ | ------------------- | ------------------------ |
-| GET    | `/`                 | Health check             |
-| GET    | `/feedback`         | List all feedback        |
-| GET    | `/feedback/{id}`    | Get a single feedback    |
-| POST   | `/feedback`         | Create new feedback      |
-| PUT    | `/feedback/{id}`    | Update feedback          |
-| DELETE | `/feedback/{id}`    | Delete feedback          |
-| GET    | `/search`           | Search / filter feedback |
-| GET    | `/feedback/statistics` | Aggregate dashboard stats |
+| Method | Endpoint                  | Description                        |
+| ------ | ------------------------- | ---------------------------------- |
+| GET    | `/`                       | Health check                       |
+| GET    | `/feedback`               | List all feedback (newest first)   |
+| GET    | `/feedback/{id}`          | Get a single feedback entry        |
+| GET    | `/feedback/statistics`    | Aggregate dashboard stats          |
+| POST   | `/feedback`               | Submit new feedback                |
+| PUT    | `/feedback/{id}`          | Update an existing feedback entry  |
+| DELETE | `/feedback/{id}`          | Delete a feedback entry            |
+| GET    | `/search`                 | Search / filter feedback           |
 
-### Example Requests & Responses
+### Example Requests
 
-#### POST /feedback
+#### POST /feedback — Create new feedback
 
-```http
-POST /feedback HTTP/1.1
-Content-Type: application/json
-
-{
-  "participant_name": "Salma",
-  "program_name": "AFDE Capstone Training",
-  "rating": 5,
-  "comments": "Excellent training program!"
-}
+```bash
+curl -X POST http://localhost:8000/feedback \
+  -H "Content-Type: application/json" \
+  -d '{
+    "participant_name": "Salma",
+    "program_name": "AFDE Capstone Training",
+    "rating": 5,
+    "comments": "Excellent training program!"
+  }'
 ```
 
 **Response (201 Created):**
@@ -250,28 +296,37 @@ Content-Type: application/json
 }
 ```
 
-#### GET /search
+#### GET /search — Filter feedback
 
-```
-GET /search?keyword=excellent&rating=5
-GET /search?program=AFDE
-```
+```bash
+# Search by keyword
+curl "http://localhost:8000/search?keyword=excellent"
 
-#### PUT /feedback/{id}
+# Filter by rating
+curl "http://localhost:8000/search?rating=5"
 
-```http
-PUT /feedback/1 HTTP/1.1
-Content-Type: application/json
+# Filter by program
+curl "http://localhost:8000/search?program=AFDE"
 
-{
-  "rating": 4,
-  "comments": "Updated comment"
-}
+# Combine filters
+curl "http://localhost:8000/search?keyword=training&rating=5"
 ```
 
-For full details with all field validations and error responses, see
-[docs/API.md](docs/API.md) or open the interactive Swagger UI at
-`http://localhost:8000/docs` while the backend is running.
+#### PUT /feedback/{id} — Partial update
+
+```bash
+curl -X PUT http://localhost:8000/feedback/1 \
+  -H "Content-Type: application/json" \
+  -d '{"rating": 4, "comments": "Updated comment"}'
+```
+
+#### DELETE /feedback/{id}
+
+```bash
+curl -X DELETE http://localhost:8000/feedback/1
+```
+
+For full details including all field validations and error responses, open the interactive Swagger UI at `http://localhost:8000/docs` while the backend is running, or see [docs/API.md](docs/API.md).
 
 ---
 
@@ -279,32 +334,26 @@ For full details with all field validations and error responses, see
 
 **Feedback Table:**
 
-| Column           | Type         | Constraints                       |
-| ---------------- | ------------ | --------------------------------- |
-| feedback_id      | INTEGER      | PRIMARY KEY, AUTOINCREMENT        |
-| participant_name | VARCHAR(100) | NOT NULL                          |
-| program_name     | VARCHAR(150) | NOT NULL                          |
-| rating           | INTEGER      | NOT NULL, CHECK (1–5)             |
-| comments         | TEXT         | NULL allowed                      |
+| Column           | Type         | Constraints                         |
+| ---------------- | ------------ | ----------------------------------- |
+| feedback_id      | INTEGER      | PRIMARY KEY, AUTOINCREMENT          |
+| participant_name | VARCHAR(100) | NOT NULL                            |
+| program_name     | VARCHAR(150) | NOT NULL                            |
+| rating           | INTEGER      | NOT NULL, CHECK (1–5)               |
+| comments         | TEXT         | NULL allowed                        |
 | submitted_at     | DATETIME     | NOT NULL, default CURRENT_TIMESTAMP |
 
-See [database/schema.sql](database/schema.sql) for the executable script.
+See [database/schema.sql](database/schema.sql) for the executable schema script.
 
 ---
 
 ## Real-Time UI
 
-The web interface is **real-time** — the Dashboard and All Feedback
-pages poll the backend every **5 seconds** and silently refresh the
-data when new feedback is submitted. A live indicator (pulsing green
-dot) shows when auto-refresh is active.
+The web interface is **real-time** — the Dashboard and All Feedback pages poll the backend every **5 seconds** and silently refresh the data when new feedback is submitted. A live indicator (pulsing green dot) shows when auto-refresh is active.
 
-This means you can open the dashboard in one browser tab, submit
-feedback from another tab (or via Postman), and watch the stats and
-listing update automatically — no page reload needed.
+This means you can open the dashboard in one browser tab, submit feedback from another tab (or via Postman), and watch the stats and listing update automatically — no page reload needed.
 
-> **Note:** Polling is paused on the All Feedback page when a search
-> filter is active, so your filtered view isn't unexpectedly reset.
+> **Note:** Polling is paused on the All Feedback page when a search filter is active, so your filtered view isn't unexpectedly reset.
 
 ---
 
@@ -325,37 +374,53 @@ Place your screenshots in the `screenshots/` folder. Recommended:
 
 ### Option 1: Swagger UI (easiest)
 
-Open http://localhost:8000/docs while the backend is running.
+Open **http://localhost:8000/docs** while the backend is running. Every endpoint is listed with interactive "Try it out" buttons.
 
-### Option 2: curl
+### Option 2: curl (Windows PowerShell)
+
+```powershell
+# Create feedback
+Invoke-WebRequest -Uri "http://localhost:8000/feedback" -Method POST `
+  -Body '{"participant_name":"Salma","program_name":"AFDE","rating":5,"comments":"Great!"}' `
+  -ContentType "application/json" -UseBasicParsing | Select-Object -ExpandProperty Content
+
+# List all feedback
+Invoke-WebRequest -Uri "http://localhost:8000/feedback" -UseBasicParsing | Select-Object -ExpandProperty Content
+
+# Search
+Invoke-WebRequest -Uri "http://localhost:8000/search?keyword=Great&rating=5" -UseBasicParsing | Select-Object -ExpandProperty Content
+
+# Statistics
+Invoke-WebRequest -Uri "http://localhost:8000/feedback/statistics" -UseBasicParsing | Select-Object -ExpandProperty Content
+```
+
+### Option 2: curl (macOS / Linux / Git Bash)
 
 ```bash
-# Create
+# Create feedback
 curl -X POST http://localhost:8000/feedback \
   -H "Content-Type: application/json" \
   -d '{"participant_name":"Salma","program_name":"AFDE","rating":5,"comments":"Great!"}'
 
-# List
+# List all feedback
 curl http://localhost:8000/feedback
 
 # Search
 curl "http://localhost:8000/search?keyword=Great&rating=5"
 
-# Stats
+# Statistics
 curl http://localhost:8000/feedback/statistics
 ```
 
 ### Option 3: Postman
 
-Import the OpenAPI schema from `http://localhost:8000/openapi.json`
-into Postman to get all endpoints pre-configured.
+Import the OpenAPI schema from `http://localhost:8000/openapi.json` into Postman to get all endpoints pre-configured with example payloads.
 
 ---
 
 ## Future Enhancements
 
-Phase 1 explicitly excludes the following, all of which can be added
-on top of the current architecture:
+Phase 1 explicitly excludes the following, all of which can be added on top of the current architecture:
 
 - Authentication & authorization (JWT, OAuth)
 - Sentiment analysis on free-text comments

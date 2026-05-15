@@ -6,12 +6,15 @@ for the Feedback Management System. SQLite is used for Phase 1 as
 recommended by the project specification.
 """
 
+from pathlib import Path
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-# SQLite database file lives in the project's database/ folder so it
-# can be inspected, backed up, or version-controlled if needed.
-SQLALCHEMY_DATABASE_URL = "sqlite:///../database/feedback.db"
+# Resolve the database path relative to this file so the server can be
+# started from any working directory (e.g. project root or backend/).
+_DB_PATH = Path(__file__).parent.parent / "database" / "feedback.db"
+SQLALCHEMY_DATABASE_URL = f"sqlite:///{_DB_PATH}"
 
 # check_same_thread=False is required for SQLite when used with FastAPI,
 # because FastAPI may use multiple threads for a single request.
